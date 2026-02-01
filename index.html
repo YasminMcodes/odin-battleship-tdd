@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+            grid-template-rows: repeat(10, 30px);
+            gap: 2px;
+            margin: 10px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #add8e6;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Battleship Game</h1>
+    <h2>Player Board</h2>
+    <div id="player-board" class="board"></div>
+    <h2>Computer Board</h2>
+    <div id="computer-board" class="board"></div>
+    <script type="module" src="./src/index.js"></script>
+</body>
+</html>
