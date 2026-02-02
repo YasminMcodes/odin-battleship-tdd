@@ -1,3 +1,6 @@
 import {startGame} from './gameController.js';
-console.log("Welcome to Battleship!");
+document.getElementById('randomize').addEventListener('click', () => {
+
+startGame();
+});
 startGame();

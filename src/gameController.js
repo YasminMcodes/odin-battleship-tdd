@@ -1,30 +1,52 @@
 import Player from '../src/Player.js';
 import renderBoards from '../src/dom.js';
-import Ship from '../src/Ship.js';
+
 
 let player;
 let computer;
 let currentPlayer;
-
-function setupBoards() {
-
-    player.gameboard.placeShip(new Ship(1), [0, 0]);
-    computer.gameboard.placeShip(new Ship(1), [1, 1]);
-}
+let gamePhase = 'placement';
+let shipsToPlace = [5, 4, 3, 3, 2];
+let currentShipIndex = 0;
+let placementDirection = 'horizontal'
 
 export function startGame() {
     player = new Player('human');
     computer = new Player('computer');
     currentPlayer = player;
+    gamePhase = 'placement';
+    currentShipIndex = 0;
 
-    setupBoards();
+    computer.placeShips();
     renderBoards(player, computer);
 }
 
-export function playTurn(coordinates) {
-    if (currentPlayer !== player) return;
+export function toggleDirection() {
+    placementDirection = placementDirection === 'horizontal' ? 'vertical' : 'horizontal';
+    alert(`Direction: ${placementDirection}`)
+}
+export function playTurn([row, col], isEnemyBoard) {
+    if (gamePhase === 'placement') {
+        if (isEnemyBoard) return;
 
-    player.attack(computer.gameboard, coordinates);
+        const length = shipsToPlace[currentShipIndex];
+        const placed = player.gameboard.placeShipAt(row, col, length,placementDirection);
+        console.log('Trying to place ship at:', row, col, 'Length:', length, 'Placed:', placed);
+        if (placed) {
+            currentShipIndex += 1;
+            if (currentShipIndex === shipsToPlace.length) {
+                gamePhase = 'playing';
+                alert('All ships placed! Game starts.');
+            }
+            renderBoards(player, computer);
+            return;
+        }
+    }
+    if (gamePhase !== 'playing') return;
+    if (currentPlayer !== player) return;
+    if (!isEnemyBoard) return;
+
+    player.attack(computer.gameboard, [row, col]);
     if (computer.gameboard.allShipsSunk()) {
         alert('You win!');
         return;
@@ -49,6 +71,6 @@ function computerTurn() {
     if (player.gameboard.allShipsSunk()) {
         alert('Computer wins!');
     }
-        
+
 }
 
