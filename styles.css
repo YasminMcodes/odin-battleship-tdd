@@ -200,6 +200,7 @@ h1 {
   /* Create a metallic/gradient effect */
   background: linear-gradient(to bottom, #ffffff 0%, #a2a2a2 50%, #6d6d6d 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 
   /* Adds depth and a subtle glow */
