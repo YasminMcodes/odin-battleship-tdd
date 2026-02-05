@@ -1,61 +1,78 @@
 import Player from '../src/Player.js';
 import renderBoards from '../src/dom.js';
-
+import { resetShipYardDOM } from '../src/dom.js';
 
 let player;
 let computer;
 let currentPlayer;
 let gamePhase = 'placement';
-let shipsToPlace = [5, 4, 3, 3, 2];
+let shipsToPlace = [5, 4, 3, 2];
 let currentShipIndex = 0;
 let placementDirection = 'horizontal'
-
+let isTwoPlayer = false;
+let waitingForPass = false;
+export function setGameMode(mode) {
+    isTwoPlayer = (mode === '2p');
+    document.getElementById('start-menu').classList.add('hidden');
+    startGame();
+}
 export function startGame() {
-    player = new Player('human');
-    computer = new Player('computer');
+    player = new Player('Player 1');
+    if (isTwoPlayer) {
+        computer = new Player('Player 2');
+    } else {
+        computer = new Player('Computer');
+    }
     currentPlayer = player;
     gamePhase = 'placement';
     currentShipIndex = 0;
 
-    computer.placeShips();
-    renderBoards(player, computer);
+    if (!isTwoPlayer) {
+        computer.gameboard.placeAllShipsRandomly();
+    }
+
+    renderBoards(player, computer, currentPlayer, isTwoPlayer);
 }
 
 export function toggleDirection() {
     placementDirection = placementDirection === 'horizontal' ? 'vertical' : 'horizontal';
-    alert(`Direction: ${placementDirection}`)
+
+    const ships = document.querySelectorAll('#ship-yard .ship:not(.placed');
+
+    ships.forEach(ship => {
+        ship.classList.toggle('vertical', placementDirection === 'vertical');
+    });
+
 }
 export function playTurn([row, col], isEnemyBoard) {
-    if (gamePhase === 'placement') {
-        if (isEnemyBoard) return;
-
-        const length = shipsToPlace[currentShipIndex];
-        const placed = player.gameboard.placeShipAt(row, col, length,placementDirection);
-        console.log('Trying to place ship at:', row, col, 'Length:', length, 'Placed:', placed);
-        if (placed) {
-            currentShipIndex += 1;
-            if (currentShipIndex === shipsToPlace.length) {
-                gamePhase = 'playing';
-                alert('All ships placed! Game starts.');
-            }
-            renderBoards(player, computer);
-            return;
-        }
-    }
-    if (gamePhase !== 'playing') return;
-    if (currentPlayer !== player) return;
+    if (gamePhase !== 'playing' || waitingForPass) return;
     if (!isEnemyBoard) return;
 
-    player.attack(computer.gameboard, [row, col]);
-    if (computer.gameboard.allShipsSunk()) {
-        alert('You win!');
+    const opponent = (currentPlayer == player) ? computer : player;
+
+    const currentPlayerName = (currentPlayer === player) ? "Player 1" : "Player 2";
+
+    opponent.gameboard.receiveAttack([row, col]);
+    if (opponent.gameboard.allShipsSunk()) {
+        alert(`${currentPlayerName} Wins!`);
+        startGame();
         return;
     }
-
-    computerTurn();
-    renderBoards(player, computer);
+    if (isTwoPlayer) {
+        waitingForPass = true;
+        renderBoards(player, computer, currentPlayer, isTwoPlayer, true);
+    } else {
+        computerTurn();
+        renderBoards(player, computer, currentPlayer, isTwoPlayer);
+    }
 }
-
+export function nextTurn() {
+    if (gamePhase == 'playing') {
+        currentPlayer = (currentPlayer === player) ? computer : player;
+    }
+    waitingForPass = false;
+    renderBoards(player, computer, currentPlayer, isTwoPlayer, false);
+}
 function computerTurn() {
     let move;
     do {
@@ -73,4 +90,49 @@ function computerTurn() {
     }
 
 }
+function resetPlacementForPlayer2() {
+    waitingForPass = true;
+    currentShipIndex = 0;
+    currentPlayer = computer;
+    renderBoards(player, computer, currentPlayer, isTwoPlayer, true);
+    resetShipYardDOM();
+}
+
+export function placeShipFromDrag(row, col, length) {
+    if (gamePhase !== 'placement') return;
+
+    const placed = currentPlayer.gameboard.placeShipAt(
+        row,
+        col,
+        length,
+        placementDirection
+    );
+    if (placed) {
+        removeShipYard(length);
+        currentShipIndex++;
+        if (currentShipIndex === shipsToPlace.length) {
+            if (isTwoPlayer && currentPlayer === player) {
+                resetPlacementForPlayer2();
+            } else {
+                gamePhase = 'playing';
+                currentPlayer = player;
+                renderBoards(player, computer, currentPlayer, isTwoPlayer);
+                console.log("Game Start")
+            }
+        } else {
+            renderBoards(player, computer, currentPlayer, isTwoPlayer);
+        }
+    }
+}
+
+export function removeShipYard(length) {
+    const ship = document.querySelector(`.ship[data-length="${length}"]`);
+    if (!ship) return;
+
+    ship.classList.add('placed');
+    ship.setAttribute('draggable', 'false');
+}
+
+
+
 

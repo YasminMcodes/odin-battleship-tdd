@@ -19,7 +19,7 @@ export default class Gameboard {
         );
     }
 
-    generateCoordinates(length, direction,row,col) {
+    generateCoordinates(length, direction, row, col) {
         const coordinates = [];
         for (let i = 0; i < length; i++) {
             if (direction === 'horizontal') {
@@ -39,27 +39,27 @@ export default class Gameboard {
             const col = Math.floor(Math.random() * 10);
             const coordinates = this.generateCoordinates(length, direction, row, col);
 
-            if(direction === 'horizontal' && col + length > 10) continue;
-            if(direction === 'vertical' && row + length > 10) continue;
+            if (direction === 'horizontal' && col + length > 10) continue;
+            if (direction === 'vertical' && row + length > 10) continue;
 
-            if(this.isValidPlacement(coordinates)) {
+            if (this.isValidPlacement(coordinates)) {
                 const ship = new Ship(length);
                 this.placeShip(ship, coordinates);
                 placed = true;
             }
-        } 
+        }
     }
 
-    placeAllShipsRandomly() { 
-        const shipLengths = [5, 4, 3, 3, 2];
+    placeAllShipsRandomly() {
+        const shipLengths = [5, 4, 3, 2];
         for (let length of shipLengths) {
             this.placeShipRandomly(length);
         }
     }
     placeShipAt(row, col, length, direction = 'horizontal') {
         const coordinates = this.generateCoordinates(length, direction, row, col);
-        if((direction === 'horizontal' && col + length > 10) ||
-           (direction === 'vertical' && row + length > 10)) {
+        if ((direction === 'horizontal' && col + length > 10) ||
+            (direction === 'vertical' && row + length > 10)) {
             return false;
         }
         if (!this.isValidPlacement(coordinates)) {
@@ -82,6 +82,7 @@ export default class Gameboard {
         return 'miss';
     }
     allShipsSunk() {
+        if (this.ships.length === 0) return false;
         return this.ships.every(placedShip => placedShip.ship.isSunk());
     }
 }

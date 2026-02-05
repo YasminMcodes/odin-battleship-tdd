@@ -1,19 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Battleship</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="start-menu">
+      <div class="menu-content">
+        <h1>BATTLESHIP</h1>
+        <p>Select Game Mode</p>
+        <button id="vs-computer">Play vs Computer</button>
+        <button id="vs-friend">2-Player (Pass & Play)</button>
+      </div>
+    </div>
     <h1>Battleship Game</h1>
-    <button id = "randomize">Randomize Ships</button>
-    <button id = "totate-btn">Rotate Ship</button>
-    <h2>Player Board</h2>
-    <div id="player-board" class="board"></div>
-    <h2>Computer Board</h2>
-    <div id="computer-board" class="board"></div>
+    <div id="controls">
+      <button id="randomize">Randomize Ships</button>
+      <button id="rotate-btn">Rotate Ship</button>
+    </div>
+
+    <div id="ship-yard">
+      <div class="ship" draggable="true" data-length="5"></div>
+      <div class="ship" draggable="true" data-length="4"></div>
+      <div class="ship" draggable="true" data-length="3"></div>
+      <div class="ship" draggable="true" data-length="2"></div>
+    </div>
+
+    <div id="pass-overlay" class="hidden">
+      <div class="overlay-content">
+        <h1>PASS DEVICE</h1>
+        <p>Hand the laptop to the next player</p>
+        <button id="btn-ready">I am Ready</button>
+      </div>
+    </div>
+    <div id="game-main">
+      <div class="board-section">
+        <h2 id="player-title">Player 1 Board</h2>
+        <div id="player-board" class="board"></div>
+      </div>
+
+      <div class="vertical-divider"></div>
+
+      <div class="board-section">
+        <h2 id="enemy-title">Computer Board</h2>
+        <div id="computer-board" class="board"></div>
+      </div>
+    </div>
+
     <script type="module" src="./src/index.js"></script>
-</body>
+  </body>
 </html>
